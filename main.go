@@ -4,17 +4,22 @@ import (
 	"github.com/labstack/echo"
 	"net/http"
 	"example/plutonke-server/utils"
-	"example/plutonke-server/expense"
+	"example/plutonke-server/types"
 
 )
 
 
-
-var expenses = []expense.Expense{
+var expenses = []types.Expense{
 	{Id: "1", Name: "minecraft", Price: 20, Date: "10/03/2020", Category: "Games"},
 	{Id: "2", Name: "Cumple de urko 2024", Price: 1500, Date: "10/03/2020", Category: "Gifts"},
 	{Id: "3", Name: "Cena con amigos", Price: 50, Date: "10/03/2020", Category: "Food"},
 	{Id: "4", Name: "Pool", Price: 1000, Date: "10/03/2024", Category: "Games"},
+}
+
+var categories = []types.Category{
+	{Id: "1", Name: "Games", MaxAmount: 7000, SpentAmount: 20000},
+	{Id: "2", Name: "Gifts", MaxAmount: 70000, SpentAmount: 300},
+	{Id: "3", Name: "Food", MaxAmount: 100000, SpentAmount: 40000},
 }
 
 func main() {
@@ -25,11 +30,13 @@ func main() {
 	router.PUT("/expenses/:id", EditExpense)
 	router.DELETE("/expenses/:id", DeleteExpense)
 
+	router.GET("/categories", GetAllCategories)
+
 	router.Start(":8080")
 }
 
-func GetAllExpenses(context echo.Context) error {
-	return context.JSON(http.StatusOK, expenses)
+func GetAllExpenses(c echo.Context) error {
+	return c.JSON(http.StatusOK, expenses)
 }
 
 
@@ -47,7 +54,7 @@ func GetExpense(c echo.Context) error {
 }
 
 func AddExpense(c echo.Context) error {
-	var expense expense.Expense
+	var expense types.Expense
 
 	if err := c.Bind(&expense); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
@@ -79,8 +86,6 @@ func EditExpense(c echo.Context) error {
 	return c.JSON(http.StatusOK, expense)
 }
 
-
-
 func DeleteExpense(c echo.Context) error {
 	id := c.Param("id")
 
@@ -98,7 +103,10 @@ func DeleteExpense(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{"message": "Expense deleted"})
 }
 	
-	
+func GetAllCategories(c echo.Context) error {
+	return c.JSON(http.StatusOK, categories)
+}
+
 /*
 * Obtener todas las expenses ✔️
 * Agregar 1 expense ✔️

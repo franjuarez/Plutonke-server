@@ -2,11 +2,11 @@ package utils
 
 import(
 	"errors"
-	"example/plutonke-server/expense"
+	"example/plutonke-server/types"
 )
 
 // Función auxiliar para obtener el índice del elemento con el ID dado
-func GetIndexById(id string, expenses []expense.Expense) (int, error) {
+func GetIndexById(id string, expenses []types.Expense) (int, error) {
 	for i, expense := range expenses {
 		if id == expense.Id {
 			return i, nil
@@ -16,7 +16,7 @@ func GetIndexById(id string, expenses []expense.Expense) (int, error) {
 	return -1, errors.New("expense not found")
 }
 
-func GetItemById(id string, expenses []expense.Expense) (*expense.Expense, error) {
+func GetItemById(id string, expenses []types.Expense) (*types.Expense, error) {
 	for i, item := range expenses {
 		if item.Id == id {
 			return &expenses[i], nil
