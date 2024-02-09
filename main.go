@@ -10,16 +10,16 @@ import (
 
 
 var expenses = []types.Expense{
-	{Id: "1", Name: "minecraft", Price: 20, Date: "10/03/2020", Category: "Games"},
+	{Id: "1", Name: "Minecraft", Price: 2200, Date: "10/03/2020", Category: "Games"},
 	{Id: "2", Name: "Cumple de urko 2024", Price: 1500, Date: "10/03/2020", Category: "Gifts"},
-	{Id: "3", Name: "Cena con amigos", Price: 50, Date: "10/03/2020", Category: "Food"},
+	{Id: "3", Name: "Cena con amigos", Price: 11000, Date: "10/03/2020", Category: "Food"},
 	{Id: "4", Name: "Pool", Price: 1000, Date: "10/03/2024", Category: "Games"},
 }
 
 var categories = []types.Category{
-	{Id: "1", Name: "Games", MaxAmount: 7000, SpentAmount: 20000},
-	{Id: "2", Name: "Gifts", MaxAmount: 70000, SpentAmount: 300},
-	{Id: "3", Name: "Food", MaxAmount: 100000, SpentAmount: 40000},
+	{Id: "1", Name: "Games", MaxAmount: 3000, SpentAmount: 3200},
+	{Id: "2", Name: "Gifts", MaxAmount: 7000, SpentAmount: 1500},
+	{Id: "3", Name: "Food", MaxAmount: 50000, SpentAmount: 1100},
 }
 
 func main() {
