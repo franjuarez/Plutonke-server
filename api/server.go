@@ -2,8 +2,6 @@ package api
 
 import (
 	"example/plutonke-server/storage"
-	// "fmt"
-
 	"github.com/labstack/echo"
 )
 
@@ -22,7 +20,6 @@ func NewServer(port string, store storage.Storage) *Server {
 }
 
 func (s *Server) Start() error {
-	//endpoints
 	s.router.GET("/expenses", s.HandleGetAllExpenses)
 	s.router.GET("/expenses/:id", s.HandleGetExpenseById)
 	s.router.POST("/expenses", s.HandleAddExpense)

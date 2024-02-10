@@ -12,7 +12,7 @@ type MemoryStorage struct{
 	categories []types.Category
 }
 
-// ----------------------------Inicializacion con Datos---------------------------------------------
+// ----------------------------Inicializacion con Datos----------------------------------
 
 var testExpenses = []types.Expense{
 	{Id: "1", Name: "Minecraft", Price: 2200, Date: "10/03/2020", Category: "Games"},
