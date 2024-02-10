@@ -7,3 +7,7 @@ type Expense struct {
 	Date     		string 		`json:"date"`
 	Category 		string 		`json:"category"`
 }
+
+func (e Expense) GetId() string{
+	return e.Id
+}

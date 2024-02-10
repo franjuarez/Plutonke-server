@@ -6,3 +6,7 @@ type Category struct {
 	MaxAmount		int   		`json:"maxAmount"`
 	SpentAmount 	int 		`json:"spentAmount"`
 }
+
+func (c Category) GetId() string{
+	return c.Id
+}
