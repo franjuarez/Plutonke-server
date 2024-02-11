@@ -22,9 +22,9 @@ var testExpenses = []types.Expense{
 }
 
 var testCategories = []types.Category{
-	{Id: "1", Name: "Games", MaxAmount: 3000, SpentAmount: 3200},
-	{Id: "2", Name: "Gifts", MaxAmount: 7000, SpentAmount: 1500},
-	{Id: "3", Name: "Food", MaxAmount: 50000, SpentAmount: 1100},
+	{Id: "1", Name: "Games", MaxAmount: 3000.5, SpentAmount: 3200.4},
+	{Id: "2", Name: "Gifts", MaxAmount: 7000.823, SpentAmount: 1500},
+	{Id: "3", Name: "Food", MaxAmount: 50000.324, SpentAmount: 1100},
 }
 
 func NewMemoryStorage() *MemoryStorage{
