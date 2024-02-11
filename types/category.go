@@ -22,13 +22,18 @@ func UpdateCategorySpentAmount(categoryName string, categories *[]Category, diff
 	category.SpentAmount += difference
 }
 
-func ValidateCategory(category Category) bool {
-	return validateCategoryName(category.Name) && 
+func ValidateCategory(category Category, categories *[]Category) bool {
+	return validateCategoryName(category.Name, categories) && 
 		validateCategoryMaxAmount(category.MaxAmount) &&
 		validateCategorySpentAmount(category.SpentAmount)
 }
 
-func validateCategoryName(name string) bool{
+func validateCategoryName(name string, categories *[]Category) bool{
+	for _, category := range *categories{
+		if category.Name == name{
+			return false
+		}
+	}
 	return len(name) > 0
 }
 

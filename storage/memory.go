@@ -25,7 +25,8 @@ var testExpenses = []types.Expense{
 var testCategories = []types.Category{
 	{Id: "1", Name: "Games", MaxAmount: 3000.5, SpentAmount: 3200.4},
 	{Id: "2", Name: "Gifts", MaxAmount: 7000.823, SpentAmount: 1500},
-	{Id: "3", Name: "Food", MaxAmount: 50000.324, SpentAmount: 1100},
+	{Id: "3", Name: "Food", MaxAmount: 50000.324, SpentAmount: 11000},
+	{Id: "4", Name: "Pinga", MaxAmount: 100000, SpentAmount: 0},
 }
 
 func NewMemoryStorage() *MemoryStorage {
@@ -58,6 +59,7 @@ func (ms *MemoryStorage) AddExpense(expense types.Expense) (types.Expense, error
 	return expense, nil
 }
 
+//actualizar bn todo en el front, creo que ya lo hace pero hay q rechequear
 func (ms *MemoryStorage) EditExpense(editedExpense types.Expense) (types.Expense, error) {
 	if isValid := types.ValidateExpense(editedExpense, &ms.categories); !isValid {
 		return types.Expense{}, errors.New("invalid expense")
@@ -65,14 +67,17 @@ func (ms *MemoryStorage) EditExpense(editedExpense types.Expense) (types.Expense
 
 	id := editedExpense.Id
 	index, err := utils.GetIndexById(id, ms.expenses)
-
 	if err != nil {
 		return types.Expense{}, err
 	}
-
-	difference := editedExpense.Price - ms.expenses[index].Price
-	ms.expenses[index] = editedExpense
-	types.UpdateCategorySpentAmount(editedExpense.Category, &ms.categories, difference)
+	if editedExpense.Category == ms.expenses[index].Category{
+		difference := editedExpense.Price - ms.expenses[index].Price
+		types.UpdateCategorySpentAmount(editedExpense.Category, &ms.categories, difference)
+	} else{
+		types.UpdateCategorySpentAmount(ms.expenses[index].Category, &ms.categories, ms.expenses[index].Price * -1)
+		types.UpdateCategorySpentAmount(editedExpense.Category, &ms.categories, editedExpense.Price)
+		}
+	ms.expenses[index] = editedExpense 
 	return editedExpense, nil
 }
 
@@ -82,9 +87,9 @@ func (ms *MemoryStorage) DeleteExpense(id string) error {
 		return err
 	}
 
-	ms.expenses = append(ms.expenses[:index], ms.expenses[index+1:]...)
 	difference :=  ms.expenses[index].Price * -1
 	types.UpdateCategorySpentAmount(ms.expenses[index].Category, &ms.categories, difference)
+	ms.expenses = append(ms.expenses[:index], ms.expenses[index+1:]...)
 	return nil
 }
 
@@ -103,7 +108,7 @@ func (ms *MemoryStorage) GetCategoryById(id string) (types.Category, error) {
 }
 
 func (ms *MemoryStorage) AddCategory(category types.Category) (types.Category, error) {
-	if isValid := types.ValidateCategory(category); !isValid {
+	if isValid := types.ValidateCategory(category, &ms.categories); !isValid {
 		return types.Category{}, errors.New("invalid category")
 	}
 	ms.categories = append(ms.categories, category)
@@ -111,7 +116,7 @@ func (ms *MemoryStorage) AddCategory(category types.Category) (types.Category, e
 }
 
 func (ms *MemoryStorage) EditCategory(category types.Category) (types.Category, error) {
-	if isValid := types.ValidateCategory(category); !isValid {
+	if isValid := types.ValidateCategory(category, &ms.categories); !isValid {
 		return types.Category{}, errors.New("invalid category")
 	}
 
