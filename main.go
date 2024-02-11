@@ -12,7 +12,7 @@ func main() {
 
 	server := api.NewServer(PORT, testingDb)
 
-	if err := server.Start(); err != nil{
+	if err := server.Start(); err != nil {
 		panic(err)
 	}
 }

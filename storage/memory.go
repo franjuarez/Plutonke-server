@@ -1,14 +1,15 @@
 package storage
 
 import (
+	"errors"
 	"example/plutonke-server/types"
 	"example/plutonke-server/utils"
 )
 
 // ------------------------------------Stuct---------------------------------------------
 
-type MemoryStorage struct{
-	expenses []types.Expense
+type MemoryStorage struct {
+	expenses   []types.Expense
 	categories []types.Category
 }
 
@@ -27,47 +28,52 @@ var testCategories = []types.Category{
 	{Id: "3", Name: "Food", MaxAmount: 50000.324, SpentAmount: 1100},
 }
 
-func NewMemoryStorage() *MemoryStorage{
+func NewMemoryStorage() *MemoryStorage {
 	return &MemoryStorage{
-		expenses: testExpenses,
+		expenses:   testExpenses,
 		categories: testCategories,
 	}
 }
 
-
 // ---------------------------------Expenses---------------------------------------------
 
-func (ms *MemoryStorage) GetAllExpenses() ([]*types.Expense, error) {
-	expenses := make([]*types.Expense, len(ms.expenses))
-	for i := range ms.expenses{
-		expenses[i] = &ms.expenses[i]
-	}
-	return expenses, nil
+func (ms *MemoryStorage) GetAllExpenses() (*[]types.Expense, error) {
+	return &ms.expenses, nil
 }
 
-func (ms *MemoryStorage) GetExpenseById(id string) (*types.Expense, error) {
+func (ms *MemoryStorage) GetExpenseById(id string) (types.Expense, error) {
 	expense, err := utils.GetItemById(id, ms.expenses)
 	if err != nil {
-		return &types.Expense{}, err
+		return types.Expense{}, err
 	}
+	return *expense, nil
+}
+
+func (ms *MemoryStorage) AddExpense(expense types.Expense) (types.Expense, error) {
+	if isValid := types.ValidateExpense(expense, &ms.categories); !isValid {
+		return types.Expense{}, errors.New("invalid expense")
+	}
+	ms.expenses = append(ms.expenses, expense)
+	types.UpdateCategorySpentAmount(expense.Category, &ms.categories, expense.Price)
 	return expense, nil
 }
 
-func (ms *MemoryStorage) AddExpense(expense types.Expense) (*types.Expense, error) {
-	ms.expenses = append(ms.expenses, expense)
-	return& expense, nil
-}
+func (ms *MemoryStorage) EditExpense(editedExpense types.Expense) (types.Expense, error) {
+	if isValid := types.ValidateExpense(editedExpense, &ms.categories); !isValid {
+		return types.Expense{}, errors.New("invalid expense")
+	}
 
-func (ms *MemoryStorage) EditExpense(expense types.Expense) (*types.Expense, error) {
-	id := expense.Id
+	id := editedExpense.Id
 	index, err := utils.GetIndexById(id, ms.expenses)
 
 	if err != nil {
-		return &types.Expense{}, err
+		return types.Expense{}, err
 	}
 
-	ms.expenses[index] = expense
-	return &expense, nil
+	difference := editedExpense.Price - ms.expenses[index].Price
+	ms.expenses[index] = editedExpense
+	types.UpdateCategorySpentAmount(editedExpense.Category, &ms.categories, difference)
+	return editedExpense, nil
 }
 
 func (ms *MemoryStorage) DeleteExpense(id string) error {
@@ -77,42 +83,47 @@ func (ms *MemoryStorage) DeleteExpense(id string) error {
 	}
 
 	ms.expenses = append(ms.expenses[:index], ms.expenses[index+1:]...)
+	difference :=  ms.expenses[index].Price * -1
+	types.UpdateCategorySpentAmount(ms.expenses[index].Category, &ms.categories, difference)
 	return nil
 }
 
 //----------------------------Categories-------------------------------------------------
 
-func (ms *MemoryStorage) GetAllCategories() ([]*types.Category, error) {
-	categories := make([]*types.Category, len(ms.categories))
-	for i := range ms.categories{
-		categories[i] = &ms.categories[i]
-	}
-	return categories, nil
+func (ms *MemoryStorage) GetAllCategories() (*[]types.Category, error) {
+	return &ms.categories, nil
 }
 
-func (ms *MemoryStorage) GetCategoryById(id string) (*types.Category, error) {
+func (ms *MemoryStorage) GetCategoryById(id string) (types.Category, error) {
 	category, err := utils.GetItemById(id, ms.categories)
 	if err != nil {
-		return &types.Category{}, err
+		return types.Category{}, err
 	}
+	return *category, nil
+}
+
+func (ms *MemoryStorage) AddCategory(category types.Category) (types.Category, error) {
+	if isValid := types.ValidateCategory(category); !isValid {
+		return types.Category{}, errors.New("invalid category")
+	}
+	ms.categories = append(ms.categories, category)
 	return category, nil
 }
 
-func (ms *MemoryStorage) AddCategory(category types.Category) (*types.Category, error) {
-	ms.categories = append(ms.categories, category)
-	return &category, nil
-}
+func (ms *MemoryStorage) EditCategory(category types.Category) (types.Category, error) {
+	if isValid := types.ValidateCategory(category); !isValid {
+		return types.Category{}, errors.New("invalid category")
+	}
 
-func (ms *MemoryStorage) EditCategory(category types.Category) (*types.Category, error) {
 	id := category.Id
 	index, err := utils.GetIndexById(id, ms.categories)
 
 	if err != nil {
-		return &types.Category{}, err
+		return types.Category{}, err
 	}
 
 	ms.categories[index] = category
-	return &category, nil
+	return category, nil
 }
 
 func (ms *MemoryStorage) DeleteCategory(id string) error {

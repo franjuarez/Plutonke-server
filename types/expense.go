@@ -1,6 +1,8 @@
 package types
 
-import "time"
+import (
+	"time"
+)
 
 const DATE_FORMAT = "02/01/2006"
 
@@ -16,26 +18,26 @@ func (e Expense) GetId() string {
 	return e.Id
 }
 
-func ValidateExpense(expense *Expense, categories []*Category) bool {
-	return validateName(expense.Name) && validatePrice(expense.Price) &&
-		validateDate(expense.Date) && validateCategory(expense.Category, categories)
+func ValidateExpense(expense Expense, categories *[]Category) bool {
+	return validateExpenseName(expense.Name) && validateExpensePrice(expense.Price) &&
+		validateExpenseDate(expense.Date) && validateExpenseCategory(expense.Category, categories)
 }
 
-func validateName(name string) bool {
+func validateExpenseName(name string) bool {
 	return len(name) > 0
 }
 
-func validatePrice(price float32) bool {
+func validateExpensePrice(price float32) bool {
 	return true
 }
 
-func validateDate(date string) bool {
+func validateExpenseDate(date string) bool {
 	_, err := time.Parse(DATE_FORMAT, date)
 	return err == nil
 }
 
-func validateCategory(categoryName string, categories []*Category) bool {
-	for _, category := range categories {
+func validateExpenseCategory(categoryName string, categories *[] Category) bool {
+	for _, category := range *categories {
 		if category.Name == categoryName {
 			return true
 		}
