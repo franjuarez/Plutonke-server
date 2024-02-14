@@ -7,11 +7,11 @@ import (
 const DATE_FORMAT = "02/01/2006"
 
 type Expense struct {
-	Id       	string 		`json:"id"`
-	Name     	string 		`json:"name"`
-	Price    	float32		`json:"price"`
-	Date     	string 		`json:"date"`
-	Category 	string 		`json:"category"`
+	Id       	string 		`json:"id"       gorm:"primary_key"`
+	Name     	string 		`json:"name"     gorm:"not null"`
+	Price    	float32		`json:"price"    gorm:"not null"`
+	Date     	string 		`json:"date"     gorm:"not null"`
+	Category 	string 		`json:"category" gorm:"not null"`
 }
 
 func (e Expense) GetId() string {

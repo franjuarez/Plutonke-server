@@ -1,10 +1,10 @@
 package types
 
 type Category struct {
-	Id       		string		`json:"id"`
-	Name     		string 		`json:"name"`
-	MaxAmount		float32		`json:"maxAmount"`
-	SpentAmount 	float32		`json:"spentAmount"`
+	Id       		string		`json:"id"          gorm:"primary_key"`
+	Name     		string 		`json:"name"        gorm:"not null"`
+	MaxAmount		float32		`json:"maxAmount"   gorm:"not null"`
+	SpentAmount 	float32		`json:"spentAmount" gorm:"not null"`
 }
 
 func (c Category) GetId() string{

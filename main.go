@@ -8,7 +8,7 @@ import (
 const PORT = ":8080"
 
 func main() {
-	testingDb := storage.NewMemoryStorage()
+	testingDb := storage.NewSQLiteStorage()
 
 	server := api.NewServer(PORT, testingDb)
 
@@ -16,3 +16,5 @@ func main() {
 		panic(err)
 	}
 }
+
+
