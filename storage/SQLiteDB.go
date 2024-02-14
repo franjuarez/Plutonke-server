@@ -14,15 +14,13 @@ type SQLiteDatabase struct {
 	db *gorm.DB
 }
 
-
-
 func NewSQLiteStorage() *SQLiteDatabase {
 	// Open the SQLite database connection
-	db, err := gorm.Open("sqlite3", "database.db")
+	db, err := gorm.Open("sqlite3", "plutonke_database.db")
 	if err != nil {
+		db.Close()
 		panic(err)
 	}
-	defer db.Close()
 
 	// AutoMigrate will create the table if it does not exist
 	db.AutoMigrate(&types.Category{})
@@ -33,42 +31,42 @@ func NewSQLiteStorage() *SQLiteDatabase {
 	}
 }
 
-func (db *SQLiteDatabase) GetAllExpenses() (*[]types.Expense, error) {
+func (sqldb *SQLiteDatabase) GetAllExpenses() (*[]types.Expense, error) {
 	expenses := []types.Expense{}
-	db.db.Find(&expenses)
+	sqldb.db.Find(&expenses)
 	return &expenses, nil
 }
 
-func (db *SQLiteDatabase) GetExpenseById(string) (types.Expense, error) {
+func (sqldb *SQLiteDatabase) GetExpenseById(string) (types.Expense, error) {
 	return types.Expense{}, nil
 }
-func (db *SQLiteDatabase) AddExpense(types.Expense) (types.Expense, error) {
+func (sqldb *SQLiteDatabase) AddExpense(types.Expense) (types.Expense, error) {
 	return types.Expense{}, nil
 }
-func (db *SQLiteDatabase) EditExpense(types.Expense) (types.Expense, error) {
+func (sqldb *SQLiteDatabase) EditExpense(types.Expense) (types.Expense, error) {
 	return types.Expense{}, nil
  }
-func (db *SQLiteDatabase) DeleteExpense(string) error {
+func (sqldb *SQLiteDatabase) DeleteExpense(string) error {
 	return nil
 
 }
-func (db *SQLiteDatabase) GetAllCategories() (*[]types.Category, error) {
+func (sqldb *SQLiteDatabase) GetAllCategories() (*[]types.Category, error) {
 	categories := []types.Category{}
-	db.db.Find(&categories)
+	sqldb.db.Find(&categories)
 	return &categories, nil
 }
 
-func (db *SQLiteDatabase) GetCategoryById(string) (types.Category, error) {
+func (sqldb *SQLiteDatabase) GetCategoryById(string) (types.Category, error) {
 	return types.Category{}, nil
 }
-func (db *SQLiteDatabase) AddCategory(types.Category) (types.Category, error) {
+func (sqldb *SQLiteDatabase) AddCategory(types.Category) (types.Category, error) {
 	return types.Category{}, nil
 
 }
-func (db *SQLiteDatabase) EditCategory(types.Category) (types.Category, error)	{
+func (sqldb *SQLiteDatabase) EditCategory(types.Category) (types.Category, error)	{
 	return types.Category{}, nil
 }
-func (db *SQLiteDatabase) DeleteCategory(string) error {
+func (sqldb *SQLiteDatabase) DeleteCategory(string) error {
 	return nil
 }
 
@@ -76,3 +74,10 @@ func (db *SQLiteDatabase) DeleteCategory(string) error {
 // AddExpense(types.Expense) (types.Expense, error)
 // EditExpense(types.Expense) (types.Expense, error)
 // DeleteExpense(string) error
+
+func (sqldb *SQLiteDatabase) Close() error {
+	if err := sqldb.db.Close(); err != nil{
+		return err
+	}
+	return nil
+}

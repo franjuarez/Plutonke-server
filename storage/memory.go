@@ -140,3 +140,7 @@ func (ms *MemoryStorage) DeleteCategory(id string) error {
 	ms.categories = append(ms.categories[:index], ms.categories[index+1:]...)
 	return nil
 }
+
+func (ms *MemoryStorage) Close() error {
+	return nil
+}

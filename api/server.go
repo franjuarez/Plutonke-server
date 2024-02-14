@@ -37,3 +37,13 @@ func (s *Server) Start() error {
 	}
 	return nil
 }
+
+func (s *Server) Close() error {
+	if err := s.router.Close(); err != nil{
+		return err
+	}
+	if err := s.store.Close(); err != nil{
+		return err
+	}
+	return nil
+}

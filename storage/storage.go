@@ -14,5 +14,7 @@ type Storage interface {
 	AddCategory(types.Category) (types.Category, error)
 	EditCategory(types.Category) (types.Category, error)	
 	DeleteCategory(string) error
+
+	Close() error
 }
 
