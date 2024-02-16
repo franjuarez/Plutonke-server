@@ -37,46 +37,91 @@ func (sqldb *SQLiteDatabase) GetAllExpenses() (*[]types.Expense, error) {
 	return &expenses, nil
 }
 
-func (sqldb *SQLiteDatabase) GetExpenseById(string) (types.Expense, error) {
-	return types.Expense{}, nil
+func (sqldb *SQLiteDatabase) GetExpenseById(id string) (types.Expense, error) {
+	expense := types.Expense{}
+	result := sqldb.db.First(&expense, id)
+	if result.Error != nil {
+		return types.Expense{}, result.Error
+	}
+	return expense, nil
 }
-func (sqldb *SQLiteDatabase) AddExpense(types.Expense) (types.Expense, error) {
-	return types.Expense{}, nil
-}
-func (sqldb *SQLiteDatabase) EditExpense(types.Expense) (types.Expense, error) {
-	return types.Expense{}, nil
- }
-func (sqldb *SQLiteDatabase) DeleteExpense(string) error {
-	return nil
 
+func (sqldb *SQLiteDatabase) AddExpense(expense types.Expense) (types.Expense, error) {
+	result := sqldb.db.Create(&expense)
+	if result.Error != nil {
+		return types.Expense{}, result.Error
+	}
+	//TODO
+	//updatear categories spentAmount
+	//category := expense.Category;
+	//sqldb.db.Model(&category).Update("spentAmount", category.SpentAmount + expense.Amount)
+
+	return expense, nil
 }
+
+func (sqldb *SQLiteDatabase) EditExpense(expense types.Expense) (types.Expense, error) {
+	result := sqldb.db.Model(&expense).Updates(expense)
+	if result.Error != nil {
+		return types.Expense{}, result.Error
+	}
+	//TODO: update categories spentamount
+	return expense, nil
+}
+
+func (sqldb *SQLiteDatabase) DeleteExpense(id string) error {
+	result := sqldb.db.Delete(&types.Expense{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
 func (sqldb *SQLiteDatabase) GetAllCategories() (*[]types.Category, error) {
 	categories := []types.Category{}
 	sqldb.db.Find(&categories)
 	return &categories, nil
 }
 
-func (sqldb *SQLiteDatabase) GetCategoryById(string) (types.Category, error) {
-	return types.Category{}, nil
+func (sqldb *SQLiteDatabase) GetCategoryById(id string) (types.Category, error) {
+	category := types.Category{}
+	result := sqldb.db.First(&category, id)
+	if result.Error != nil {
+		return types.Category{}, result.Error
+	}
+	return category, nil
 }
-func (sqldb *SQLiteDatabase) AddCategory(types.Category) (types.Category, error) {
-	return types.Category{}, nil
 
+func (sqldb *SQLiteDatabase) AddCategory(category types.Category) (types.Category, error) {
+	result := sqldb.db.Create(&category)
+	if result.Error != nil {
+		return types.Category{}, result.Error
+	}
+	//TODO
+	//updatear categories spentAmount
+	//category := expense.Category;
+	//sqldb.db.Model(&category).Update("spentAmount", category.SpentAmount + expense.Amount)
+	return category, nil
 }
-func (sqldb *SQLiteDatabase) EditCategory(types.Category) (types.Category, error)	{
-	return types.Category{}, nil
+
+func (sqldb *SQLiteDatabase) EditCategory(category types.Category) (types.Category, error) {
+	result := sqldb.db.Model(&category).Updates(category)
+	if result.Error != nil {
+		return types.Category{}, result.Error
+	}
+	//TODO: update categories spentamount
+	return category, nil
 }
-func (sqldb *SQLiteDatabase) DeleteCategory(string) error {
+
+func (sqldb *SQLiteDatabase) DeleteCategory(id string) error {
+	result := sqldb.db.Delete(&types.Category{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
 	return nil
 }
 
-// GetExpenseById(string) (types.Expense, error)
-// AddExpense(types.Expense) (types.Expense, error)
-// EditExpense(types.Expense) (types.Expense, error)
-// DeleteExpense(string) error
-
 func (sqldb *SQLiteDatabase) Close() error {
-	if err := sqldb.db.Close(); err != nil{
+	if err := sqldb.db.Close(); err != nil {
 		return err
 	}
 	return nil

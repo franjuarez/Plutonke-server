@@ -1,7 +1,7 @@
 package types
 
 type Category struct {
-	Id       		string		`json:"id"          gorm:"primary_key"`
+	Id       		string		`json:"id"          gorm:"primary_key;autoIncrement"`
 	Name     		string 		`json:"name"        gorm:"not null"`
 	MaxAmount		float32		`json:"maxAmount"   gorm:"not null"`
 	SpentAmount 	float32		`json:"spentAmount" gorm:"not null"`
