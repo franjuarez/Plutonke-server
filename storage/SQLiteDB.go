@@ -37,7 +37,7 @@ func (sqldb *SQLiteDatabase) GetAllExpenses() (*[]types.Expense, error) {
 	return &expenses, nil
 }
 
-func (sqldb *SQLiteDatabase) GetExpenseById(id string) (types.Expense, error) {
+func (sqldb *SQLiteDatabase) GetExpenseById(id uint) (types.Expense, error) {
 	expense := types.Expense{}
 	result := sqldb.db.First(&expense, id)
 	if result.Error != nil {
@@ -68,7 +68,7 @@ func (sqldb *SQLiteDatabase) EditExpense(expense types.Expense) (types.Expense, 
 	return expense, nil
 }
 
-func (sqldb *SQLiteDatabase) DeleteExpense(id string) error {
+func (sqldb *SQLiteDatabase) DeleteExpense(id uint) error {
 	result := sqldb.db.Delete(&types.Expense{}, id)
 	if result.Error != nil {
 		return result.Error
@@ -82,7 +82,7 @@ func (sqldb *SQLiteDatabase) GetAllCategories() (*[]types.Category, error) {
 	return &categories, nil
 }
 
-func (sqldb *SQLiteDatabase) GetCategoryById(id string) (types.Category, error) {
+func (sqldb *SQLiteDatabase) GetCategoryById(id uint) (types.Category, error) {
 	category := types.Category{}
 	result := sqldb.db.First(&category, id)
 	if result.Error != nil {
@@ -112,7 +112,7 @@ func (sqldb *SQLiteDatabase) EditCategory(category types.Category) (types.Catego
 	return category, nil
 }
 
-func (sqldb *SQLiteDatabase) DeleteCategory(id string) error {
+func (sqldb *SQLiteDatabase) DeleteCategory(id uint) error {
 	result := sqldb.db.Delete(&types.Category{}, id)
 	if result.Error != nil {
 		return result.Error

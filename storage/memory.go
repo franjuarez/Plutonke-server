@@ -16,17 +16,17 @@ type MemoryStorage struct {
 // ----------------------------Inicializacion con Datos----------------------------------
 
 var testExpenses = []types.Expense{
-	{Id: "1", Name: "Minecraft", Price: 2200, Date: "10/03/2020", Category: "Games"},
-	{Id: "2", Name: "Cumple de urko 2024", Price: 1500, Date: "10/03/2020", Category: "Gifts"},
-	{Id: "3", Name: "Cena con amigos", Price: 11000, Date: "10/03/2020", Category: "Food"},
-	{Id: "4", Name: "Pool", Price: 1000, Date: "10/03/2024", Category: "Games"},
+	{Id: 1, Name: "Minecraft", Price: 2200, Date: "10/03/2020", Category: "Games"},
+	{Id: 2, Name: "Cumple de urko 2024", Price: 1500, Date: "10/03/2020", Category: "Gifts"},
+	{Id: 3, Name: "Cena con amigos", Price: 11000, Date: "10/03/2020", Category: "Food"},
+	{Id: 4, Name: "Pool", Price: 1000, Date: "10/03/2024", Category: "Games"},
 }
 
 var testCategories = []types.Category{
-	{Id: "1", Name: "Games", MaxAmount: 3000.5, SpentAmount: 3200.4},
-	{Id: "2", Name: "Gifts", MaxAmount: 7000.823, SpentAmount: 1500},
-	{Id: "3", Name: "Food", MaxAmount: 50000.324, SpentAmount: 11000},
-	{Id: "4", Name: "Pinga", MaxAmount: 100000, SpentAmount: 0},
+	{Id: 1, Name: "Games", MaxAmount: 3000.5, SpentAmount: 3200.4},
+	{Id: 2, Name: "Gifts", MaxAmount: 7000.823, SpentAmount: 1500},
+	{Id: 3, Name: "Food", MaxAmount: 50000.324, SpentAmount: 11000},
+	{Id: 4, Name: "Pinga", MaxAmount: 100000, SpentAmount: 0},
 }
 
 func NewMemoryStorage() *MemoryStorage {
@@ -42,7 +42,7 @@ func (ms *MemoryStorage) GetAllExpenses() (*[]types.Expense, error) {
 	return &ms.expenses, nil
 }
 
-func (ms *MemoryStorage) GetExpenseById(id string) (types.Expense, error) {
+func (ms *MemoryStorage) GetExpenseById(id uint) (types.Expense, error) {
 	expense, err := utils.GetItemById(id, ms.expenses)
 	if err != nil {
 		return types.Expense{}, err
@@ -81,7 +81,7 @@ func (ms *MemoryStorage) EditExpense(editedExpense types.Expense) (types.Expense
 	return editedExpense, nil
 }
 
-func (ms *MemoryStorage) DeleteExpense(id string) error {
+func (ms *MemoryStorage) DeleteExpense(id uint) error {
 	index, err := utils.GetIndexById(id, ms.expenses)
 	if err != nil {
 		return err
@@ -99,7 +99,7 @@ func (ms *MemoryStorage) GetAllCategories() (*[]types.Category, error) {
 	return &ms.categories, nil
 }
 
-func (ms *MemoryStorage) GetCategoryById(id string) (types.Category, error) {
+func (ms *MemoryStorage) GetCategoryById(id uint) (types.Category, error) {
 	category, err := utils.GetItemById(id, ms.categories)
 	if err != nil {
 		return types.Category{}, err
@@ -131,7 +131,7 @@ func (ms *MemoryStorage) EditCategory(category types.Category) (types.Category, 
 	return category, nil
 }
 
-func (ms *MemoryStorage) DeleteCategory(id string) error {
+func (ms *MemoryStorage) DeleteCategory(id uint) error {
 	index, err := utils.GetIndexById(id, ms.categories)
 	if err != nil {
 		return err

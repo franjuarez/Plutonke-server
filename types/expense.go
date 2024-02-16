@@ -7,7 +7,7 @@ import (
 const DATE_FORMAT = "02/01/2006"
 
 type Expense struct {
-	Id        string  `json:"id" gorm:"primaryKey;autoIncrement"`
+	Id        uint  `json:"id" gorm:"primaryKey;autoIncrement"`
 	Name      string  `json:"name" gorm:"not null"`
 	Price     float32 `json:"price" gorm:"not null"`
 	Date      string  `json:"date" gorm:"not null"`
@@ -15,7 +15,7 @@ type Expense struct {
 }
 
 
-func (e Expense) GetId() string {
+func (e Expense) GetId() uint {
 	return e.Id
 }
 

@@ -1,6 +1,7 @@
 package api
 
 import(
+	"strconv"
 	"example/plutonke-server/types"
 	"net/http"
 	"github.com/labstack/echo"
@@ -26,7 +27,13 @@ func (s *Server) HandleGetExpenseById(c echo.Context) error {
 	// 		"error": "Invalid Expense Id!",
 	// 	})
 	// }
-	id := c.Param("id")
+	_id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	id := uint(_id)
+	if err != nil{
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": err.Error(),
+		})
+	}
 
 	expense, err := s.store.GetExpenseById(id)
 	if err != nil{
@@ -79,7 +86,13 @@ func (s *Server) HandleEditExpense(c echo.Context) error{
 }
 
 func (s *Server) HandleDeleteExpense(c echo.Context) error{
-	id := c.Param("id")
+	_id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	id := uint(_id)
+	if err != nil{
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": err.Error(),
+		})
+	}
 
 	if err := s.store.DeleteExpense(id); err != nil{
 		return c.JSON(http.StatusBadRequest, map[string]string{
@@ -109,7 +122,13 @@ func (s *Server) HandleGetCategoryById(c echo.Context) error {
 	// 		"error": "Invalid Expense Id!",
 	// 	})
 	// }
-	id := c.Param("id")
+	_id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	id := uint(_id)
+	if err != nil{
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": err.Error(),
+		})
+	}
 
 	category, err := s.store.GetCategoryById(id)
 	if err != nil{
@@ -162,7 +181,13 @@ func (s *Server) HandleEditCategory(c echo.Context) error{
 }
 
 func (s *Server) HandleDeleteCategory(c echo.Context) error{
-	id := c.Param("id")
+	_id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	id := uint(_id)
+	if err != nil{
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": err.Error(),
+		})
+	}
 
 	if err := s.store.DeleteCategory(id); err != nil{
 		return c.JSON(http.StatusBadRequest, map[string]string{
