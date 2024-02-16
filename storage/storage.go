@@ -14,7 +14,9 @@ type Storage interface {
 	AddCategory(types.Category) (types.Category, error)
 	EditCategory(types.Category) (types.Category, error)	
 	DeleteCategory(uint) error
-
+	
+	CheckIfCategoryExists(types.Category) (bool, error)
+	CheckIfCategoryNameExists(string) (bool, error)
 	Close() error
 }
 

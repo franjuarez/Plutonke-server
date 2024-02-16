@@ -120,6 +120,23 @@ func (sqldb *SQLiteDatabase) DeleteCategory(id uint) error {
 	return nil
 }
 
+
+func (sqldb *SQLiteDatabase) CheckIfCategoryExists(category types.Category) (bool, error) {
+	result := sqldb.db.First(&category, category.Id)
+	if result.Error != nil {
+		return false, result.Error
+	}
+	return true, nil
+}
+
+func (sqldb *SQLiteDatabase) CheckIfCategoryNameExists(name string) (bool, error) {
+	result := sqldb.db.Where("name = ?", name)
+	if result.Error != nil {
+		return false, result.Error
+	}
+	return true, nil
+}
+
 func (sqldb *SQLiteDatabase) Close() error {
 	if err := sqldb.db.Close(); err != nil {
 		return err
