@@ -11,7 +11,7 @@ const DATE_FORMAT = "02/01/2006"
 
 func ValidateExpense(expense types.Expense, storage storage.Storage) bool {
 	return validateExpenseName(expense.Name) && validateExpensePrice(expense.Price) &&
-		validateExpenseDate(expense.Date) && validateExpenseCategory(expense.Category, storage)
+		validateExpenseDate(expense.Date) && validateExpenseCategory(expense.CategoryID, storage)
 }
 
 func validateExpenseName(name string) bool {
@@ -27,7 +27,8 @@ func validateExpenseDate(date string) bool {
 	return err == nil
 }
 
-func validateExpenseCategory(category types.Category, storage storage.Storage) bool {
+func validateExpenseCategory(categoryID uint, storage storage.Storage) bool {
+	category, _ := storage.GetCategoryById(categoryID)
 	result, _ := storage.CheckIfCategoryExists(category)
 	return result
 }

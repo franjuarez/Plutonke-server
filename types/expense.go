@@ -6,7 +6,7 @@ type Expense struct {
 	Name      string    `json:"name" gorm:"not null"`
 	Price     float32   `json:"price" gorm:"not null"`
 	Date      string    `json:"date" gorm:"not null"`
-	Category  Category  `json:"category" gorm:"foreignKey:Id"`
+	CategoryID uint      `json:"category_id" gorm:"foreignKey:Id"`
 }
 
 func (e Expense) GetId() uint {

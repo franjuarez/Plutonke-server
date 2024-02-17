@@ -4,8 +4,6 @@ package storage
 
 import (
 	"example/plutonke-server/types"
-	//"example/plutonke-server/utils"
-	//"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
@@ -47,6 +45,7 @@ func (sqldb *SQLiteDatabase) GetExpenseById(id uint) (types.Expense, error) {
 }
 
 func (sqldb *SQLiteDatabase) AddExpense(expense types.Expense) (types.Expense, error) {
+	//Capaz aca hay que buscarla en la bdd y asignarla a mano?
 	result := sqldb.db.Create(&expense)
 	if result.Error != nil {
 		return types.Expense{}, result.Error

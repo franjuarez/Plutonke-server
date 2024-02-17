@@ -11,4 +11,3 @@ func (c Category) GetId() uint{
 	return c.Id
 }
 
-
