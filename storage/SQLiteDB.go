@@ -1,7 +1,5 @@
 package storage
 
-//TODO: ACORDARSE DE PRIMERO MIGRAR IDS A INT O VER COMO SE TRATAN EN LA BDD
-
 import (
 	"example/plutonke-server/types"
 	"github.com/jinzhu/gorm"
@@ -13,14 +11,12 @@ type SQLiteDatabase struct {
 }
 
 func NewSQLiteStorage() *SQLiteDatabase {
-	// Open the SQLite database connection
 	db, err := gorm.Open("sqlite3", "plutonke_database.db")
 	if err != nil {
 		db.Close()
 		panic(err)
 	}
 
-	// AutoMigrate will create the table if it does not exist
 	db.AutoMigrate(&types.Category{})
 	db.AutoMigrate(&types.Expense{})
 
@@ -31,106 +27,125 @@ func NewSQLiteStorage() *SQLiteDatabase {
 
 func (sqldb *SQLiteDatabase) GetAllExpenses() (*[]types.Expense, error) {
 	expenses := []types.Expense{}
-	sqldb.db.Find(&expenses)
+	if result := sqldb.db.Find(&expenses); result.Error != nil {
+		return nil, result.Error
+	}
 	return &expenses, nil
 }
 
 func (sqldb *SQLiteDatabase) GetExpenseById(id uint) (types.Expense, error) {
 	expense := types.Expense{}
-	result := sqldb.db.First(&expense, id)
-	if result.Error != nil {
+	if result := sqldb.db.First(&expense, id); result.Error != nil {
 		return types.Expense{}, result.Error
 	}
 	return expense, nil
 }
 
 func (sqldb *SQLiteDatabase) AddExpense(expense types.Expense) (types.Expense, error) {
-	//Capaz aca hay que buscarla en la bdd y asignarla a mano?
-	result := sqldb.db.Create(&expense)
-	if result.Error != nil {
+	if result := sqldb.db.Create(&expense); result.Error != nil {
 		return types.Expense{}, result.Error
 	}
-	//TODO
-	//updatear categories spentAmount
-	//category := expense.Category;
-	//sqldb.db.Model(&category).Update("spentAmount", category.SpentAmount + expense.Amount)
+	categoryID := expense.CategoryID
+	sqldb.db.Model(&types.Category{}).Where("id = ?", categoryID).
+		Update("spent_amount", gorm.Expr("spent_amount + ?", expense.Price))
 
 	return expense, nil
 }
 
-func (sqldb *SQLiteDatabase) EditExpense(expense types.Expense) (types.Expense, error) {
-	result := sqldb.db.Model(&expense).Updates(expense)
-	if result.Error != nil {
+func (sqldb *SQLiteDatabase) EditExpense(editedExpense types.Expense) (types.Expense, error) {
+	var oldCategory types.Category
+	var newCategory types.Category
+	var oldExpense types.Expense
+
+	if result := sqldb.db.First(&oldExpense, editedExpense.Id); result.Error != nil {
 		return types.Expense{}, result.Error
 	}
-	//TODO: update categories spentamount
-	return expense, nil
+	if result := sqldb.db.First(&oldCategory, oldExpense.CategoryID); result.Error != nil {
+		return types.Expense{}, result.Error
+	}
+	if result := sqldb.db.Model(&editedExpense).Updates(editedExpense); result.Error != nil {
+		return types.Expense{}, result.Error
+	}
+	if result := sqldb.db.First(&newCategory, editedExpense.CategoryID); result.Error != nil {
+		return types.Expense{}, result.Error
+	}
+
+	if oldCategory.Id == newCategory.Id {
+		difference := editedExpense.Price - oldExpense.Price
+		UpdateCategorySpentAmount(oldCategory, sqldb, difference)
+	} else {
+		UpdateCategorySpentAmount(oldCategory, sqldb, oldExpense.Price*-1)
+		UpdateCategorySpentAmount(newCategory, sqldb, editedExpense.Price)
+	}
+	return editedExpense, nil
 }
 
 func (sqldb *SQLiteDatabase) DeleteExpense(id uint) error {
-	result := sqldb.db.Delete(&types.Expense{}, id)
-	if result.Error != nil {
+	var expense types.Expense
+	if result := sqldb.db.First(&expense, id); result.Error != nil {
 		return result.Error
 	}
+
+	if result := sqldb.db.Model(&types.Category{}).Where("id = ?", expense.CategoryID).
+		Update("spent_amount", gorm.Expr("spent_amount - ?", expense.Price)); result.Error != nil {
+		return result.Error
+	}
+
+	if result := sqldb.db.Delete(&types.Expense{}, id); result.Error != nil {
+		return result.Error
+	}
+
 	return nil
 }
 
 func (sqldb *SQLiteDatabase) GetAllCategories() (*[]types.Category, error) {
-	categories := []types.Category{}
-	sqldb.db.Find(&categories)
+	var categories []types.Category
+	if result := sqldb.db.Find(&categories); result.Error != nil {
+		return nil, result.Error
+	}
+
 	return &categories, nil
 }
 
 func (sqldb *SQLiteDatabase) GetCategoryById(id uint) (types.Category, error) {
-	category := types.Category{}
-	result := sqldb.db.First(&category, id)
-	if result.Error != nil {
+	var category types.Category
+	if result := sqldb.db.First(&category, id); result.Error != nil {
 		return types.Category{}, result.Error
 	}
+
 	return category, nil
 }
 
 func (sqldb *SQLiteDatabase) AddCategory(category types.Category) (types.Category, error) {
-	result := sqldb.db.Create(&category)
-	if result.Error != nil {
+	if result := sqldb.db.Create(&category); result.Error != nil {
 		return types.Category{}, result.Error
 	}
-	//TODO
-	//updatear categories spentAmount
-	//category := expense.Category;
-	//sqldb.db.Model(&category).Update("spentAmount", category.SpentAmount + expense.Amount)
 	return category, nil
 }
 
 func (sqldb *SQLiteDatabase) EditCategory(category types.Category) (types.Category, error) {
-	result := sqldb.db.Model(&category).Updates(category)
-	if result.Error != nil {
+	if result := sqldb.db.Model(&category).Updates(category); result.Error != nil {
 		return types.Category{}, result.Error
 	}
-	//TODO: update categories spentamount
 	return category, nil
 }
 
 func (sqldb *SQLiteDatabase) DeleteCategory(id uint) error {
-	result := sqldb.db.Delete(&types.Category{}, id)
-	if result.Error != nil {
+	if result := sqldb.db.Delete(&types.Category{}, id); result.Error != nil {
 		return result.Error
 	}
 	return nil
 }
 
-
 func (sqldb *SQLiteDatabase) CheckIfCategoryExists(category types.Category) (bool, error) {
-	result := sqldb.db.First(&category, category.Id)
-	if result.Error != nil {
+	if result := sqldb.db.First(&category, category.Id); result.Error != nil {
 		return false, result.Error
 	}
 	return true, nil
 }
 
 func (sqldb *SQLiteDatabase) CheckIfCategoryNameExists(name string) (bool, error) {
-	result := sqldb.db.Where("name = ?", name)
-	if result.Error != nil {
+	if result := sqldb.db.Where("name = ?", name); result.Error != nil {
 		return false, result.Error
 	}
 	return true, nil
