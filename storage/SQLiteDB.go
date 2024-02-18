@@ -2,7 +2,7 @@ package storage
 
 import (
 	"example/plutonke-server/types"
-
+	"errors"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
@@ -67,7 +67,7 @@ func (sqldb *SQLiteDatabase) EditExpense(editedExpense types.Expense) (types.Exp
 	if result := sqldb.db.Model(&types.Expense{}).Where("id = ?", editedExpense.Id).Updates(editedExpense); result.Error != nil {
 		return types.Expense{}, result.Error
 	}
-	
+
 	if result := sqldb.db.First(&newCategory, editedExpense.CategoryID); result.Error != nil {
 		return types.Expense{}, result.Error
 	}
@@ -133,9 +133,24 @@ func (sqldb *SQLiteDatabase) EditCategory(category types.Category) (types.Catego
 }
 
 func (sqldb *SQLiteDatabase) DeleteCategory(id uint) error {
+	//Para obtener todos los gastos y mandarle al front
+	// var expenses []types.Expense
+	// if result := sqldb.db.Model(&types.Expense{}).Where("category_id = ?", id).Find(&expenses); result.Error != nil {
+	// 	return result.Error
+	// }
+
+	var category types.Category
+	if result := sqldb.db.First(&category, id); result.Error != nil {
+		return result.Error
+	}
+	if category.SpentAmount > 0 {
+		return errors.New("delete all expenses from this category first")
+	}
+
 	if result := sqldb.db.Delete(&types.Category{}, id); result.Error != nil {
 		return result.Error
 	}
+
 	return nil
 }
 
