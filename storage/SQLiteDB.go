@@ -2,6 +2,7 @@ package storage
 
 import (
 	"example/plutonke-server/types"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
@@ -63,19 +64,20 @@ func (sqldb *SQLiteDatabase) EditExpense(editedExpense types.Expense) (types.Exp
 	if result := sqldb.db.First(&oldCategory, oldExpense.CategoryID); result.Error != nil {
 		return types.Expense{}, result.Error
 	}
-	if result := sqldb.db.Model(&editedExpense).Updates(editedExpense); result.Error != nil {
+	if result := sqldb.db.Model(&types.Expense{}).Where("id = ?", editedExpense.Id).Updates(editedExpense); result.Error != nil {
 		return types.Expense{}, result.Error
 	}
+	
 	if result := sqldb.db.First(&newCategory, editedExpense.CategoryID); result.Error != nil {
 		return types.Expense{}, result.Error
 	}
 
 	if oldCategory.Id == newCategory.Id {
 		difference := editedExpense.Price - oldExpense.Price
-		UpdateCategorySpentAmount(oldCategory, sqldb, difference)
+		sqldb.UpdateCategorySpentAmount(newCategory, difference)
 	} else {
-		UpdateCategorySpentAmount(oldCategory, sqldb, oldExpense.Price*-1)
-		UpdateCategorySpentAmount(newCategory, sqldb, editedExpense.Price)
+		sqldb.UpdateCategorySpentAmount(oldCategory, oldExpense.Price*-1)
+		sqldb.UpdateCategorySpentAmount(newCategory, editedExpense.Price)
 	}
 	return editedExpense, nil
 }
@@ -132,6 +134,14 @@ func (sqldb *SQLiteDatabase) EditCategory(category types.Category) (types.Catego
 
 func (sqldb *SQLiteDatabase) DeleteCategory(id uint) error {
 	if result := sqldb.db.Delete(&types.Category{}, id); result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func (sqldb *SQLiteDatabase) UpdateCategorySpentAmount(category types.Category, difference float32) error {
+	category.SpentAmount += difference
+	if result := sqldb.db.Model(&category).Update("spent_amount", category.SpentAmount); result.Error != nil {
 		return result.Error
 	}
 	return nil

@@ -73,7 +73,9 @@ func (s *Server) HandleEditExpense(c echo.Context) error{
 		})
 	}
 
-	//Recibo el id, hace falta que lo use? Pq esta dentro de expense
+	_id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	id := uint(_id)
+	expense.Id = id
 	expenseEdited, err := s.store.EditExpense(expense)
 
 	if err != nil{
@@ -115,21 +117,14 @@ func (s *Server) HandleGetAllCategories(c echo.Context) error{
 }
 
 func (s *Server) HandleGetCategoryById(c echo.Context) error {
-	// id, err := strconv.Atoi(c.Param("id"))
-
-	// if err != nil{
-	// 	return c.JSON(http.StatusNotFound, map[string]string{
-	// 		"error": "Invalid Expense Id!",
-	// 	})
-	// }
 	_id, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	id := uint(_id)
 	if err != nil{
 		return c.JSON(http.StatusNotFound, map[string]string{
 			"error": err.Error(),
 		})
 	}
-
+	
+	id := uint(_id)
 	category, err := s.store.GetCategoryById(id)
 	if err != nil{
 		return c.JSON(http.StatusNotFound, map[string]string{
@@ -168,7 +163,9 @@ func (s *Server) HandleEditCategory(c echo.Context) error{
 		})
 	}
 
-	//Recibo el id, hace falta que lo use? Pq esta dentro de expense
+	_id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	id := uint(_id)
+	category.Id = id
 	categoryEdited, err := s.store.EditCategory(category)
 
 	if err != nil{
