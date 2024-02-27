@@ -20,13 +20,6 @@ func (s *Server) HandleGetAllExpenses(c echo.Context) error {
 }
 
 func (s *Server) HandleGetExpenseById(c echo.Context) error {
-	// id, err := strconv.Atoi(c.Param("id"))
-
-	// if err != nil{
-	// 	return c.JSON(http.StatusNotFound, map[string]string{
-	// 		"error": "Invalid Expense Id!",
-	// 	})
-	// }
 	_id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	id := uint(_id)
 	if err != nil{

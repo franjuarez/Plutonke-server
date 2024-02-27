@@ -43,6 +43,7 @@ func (sqldb *SQLiteDatabase) GetExpenseById(id uint) (types.Expense, error) {
 }
 
 func (sqldb *SQLiteDatabase) AddExpense(expense types.Expense) (types.Expense, error) {
+
 	if result := sqldb.db.Create(&expense); result.Error != nil {
 		return types.Expense{}, result.Error
 	}
