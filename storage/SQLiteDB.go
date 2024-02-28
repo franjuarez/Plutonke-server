@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"example/plutonke-server/types"
 	"errors"
+	"example/plutonke-server/types"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
@@ -28,7 +28,7 @@ func NewSQLiteStorage() *SQLiteDatabase {
 
 func (sqldb *SQLiteDatabase) GetAllExpenses() (*[]types.Expense, error) {
 	expenses := []types.Expense{}
-	if result := sqldb.db.Find(&expenses); result.Error != nil {
+	if result := sqldb.db.Order("date DESC").Find(&expenses); result.Error != nil {
 		return nil, result.Error
 	}
 	return &expenses, nil
@@ -43,7 +43,6 @@ func (sqldb *SQLiteDatabase) GetExpenseById(id uint) (types.Expense, error) {
 }
 
 func (sqldb *SQLiteDatabase) AddExpense(expense types.Expense) (types.Expense, error) {
-
 	if result := sqldb.db.Create(&expense); result.Error != nil {
 		return types.Expense{}, result.Error
 	}
@@ -68,7 +67,6 @@ func (sqldb *SQLiteDatabase) EditExpense(editedExpense types.Expense) (types.Exp
 	if result := sqldb.db.Model(&types.Expense{}).Where("id = ?", editedExpense.Id).Updates(editedExpense); result.Error != nil {
 		return types.Expense{}, result.Error
 	}
-
 	if result := sqldb.db.First(&newCategory, editedExpense.CategoryID); result.Error != nil {
 		return types.Expense{}, result.Error
 	}
@@ -165,16 +163,24 @@ func (sqldb *SQLiteDatabase) UpdateCategorySpentAmount(category types.Category, 
 
 func (sqldb *SQLiteDatabase) CheckIfCategoryExists(category types.Category) (bool, error) {
 	if result := sqldb.db.First(&category, category.Id); result.Error != nil {
+		        if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+            return false, nil
+        }
 		return false, result.Error
 	}
 	return true, nil
 }
 
 func (sqldb *SQLiteDatabase) CheckIfCategoryNameExists(name string) (bool, error) {
-	if result := sqldb.db.Where("name = ?", name); result.Error != nil {
-		return false, result.Error
-	}
-	return true, nil
+    var category types.Category
+	result := sqldb.db.First(&category, "name = ?", name)
+    if result.Error != nil {
+        if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+            return false, nil
+        }
+        return false, result.Error
+    }
+    return true, nil
 }
 
 func (sqldb *SQLiteDatabase) Close() error {

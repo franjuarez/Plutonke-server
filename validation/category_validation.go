@@ -13,7 +13,7 @@ func ValidateCategory(category types.Category, storage storage.Storage) bool {
 
 func validateCategoryName(name string, storage storage.Storage) bool {
 	result, _ := storage.CheckIfCategoryNameExists(name)
-	return result
+	return !result && len(name) > 0
 }
 
 func validateCategoryMaxAmount(maxAmount float32) bool {

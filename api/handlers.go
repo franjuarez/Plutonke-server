@@ -3,6 +3,7 @@ package api
 import(
 	"strconv"
 	"example/plutonke-server/types"
+	"example/plutonke-server/validation"
 	"net/http"
 	"github.com/labstack/echo"
 	)
@@ -24,7 +25,7 @@ func (s *Server) HandleGetExpenseById(c echo.Context) error {
 	id := uint(_id)
 	if err != nil{
 		return c.JSON(http.StatusNotFound, map[string]string{
-			"error": err.Error(),
+			"error": "invalid id",
 		})
 	}
 
@@ -43,6 +44,12 @@ func (s *Server) HandleAddExpense(c echo.Context) error {
 	if err := c.Bind(&expense); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": err.Error(),
+		})
+	}
+	
+	if result := validation.ValidateExpense(expense, s.store); !result{
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": "invalid expense",
 		})
 	}
 
@@ -67,8 +74,20 @@ func (s *Server) HandleEditExpense(c echo.Context) error{
 	}
 
 	_id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil{
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": "invalid id",
+		})
+	}
 	id := uint(_id)
 	expense.Id = id
+
+	if result := validation.ValidateExpense(expense, s.store); !result{
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": "invalid expense",
+		})
+	}
+
 	expenseEdited, err := s.store.EditExpense(expense)
 
 	if err != nil{
@@ -82,13 +101,13 @@ func (s *Server) HandleEditExpense(c echo.Context) error{
 
 func (s *Server) HandleDeleteExpense(c echo.Context) error{
 	_id, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	id := uint(_id)
 	if err != nil{
 		return c.JSON(http.StatusNotFound, map[string]string{
-			"error": err.Error(),
+			"error": "invalid id",
 		})
 	}
-
+	
+	id := uint(_id)
 	if err := s.store.DeleteExpense(id); err != nil{
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": err.Error(),
@@ -113,7 +132,7 @@ func (s *Server) HandleGetCategoryById(c echo.Context) error {
 	_id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil{
 		return c.JSON(http.StatusNotFound, map[string]string{
-			"error": err.Error(),
+			"error": "invalid id",
 		})
 	}
 	
@@ -133,6 +152,12 @@ func (s *Server) HandleAddCategory(c echo.Context) error {
 	if err := c.Bind(&category); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": err.Error(),
+		})
+	}
+
+	if result := validation.ValidateCategory(category, s.store); !result{
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": "invalid category",
 		})
 	}
 
@@ -157,8 +182,20 @@ func (s *Server) HandleEditCategory(c echo.Context) error{
 	}
 
 	_id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil{
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": "invalid id",
+		})
+	}
 	id := uint(_id)
 	category.Id = id
+
+	if result := validation.ValidateCategory(category, s.store); !result{
+		return c.JSON(http.StatusNotFound, map[string]string{
+			"error": "invalid category",
+		})
+	}
+
 	categoryEdited, err := s.store.EditCategory(category)
 
 	if err != nil{
