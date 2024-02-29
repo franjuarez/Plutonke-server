@@ -7,6 +7,7 @@ import (
 )
 
 func ValidateExpense(expense types.Expense, storage storage.Storage) bool {
+	// errors := make(map[string]string)
 	return validateExpenseName(expense.Name) && validateExpensePrice(expense.Price) &&
 		validateExpenseDate(expense.Date) && validateExpenseCategory(expense.CategoryID, storage)
 }

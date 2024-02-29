@@ -10,7 +10,6 @@ type IDer interface {
 	GetId() uint
 }
 
-// Función auxiliar para obtener el índice del elemento con el ID dado
 func GetIndexById[T IDer](id uint, arr []T) (int, error) {
 	for i, item := range arr {
 		if id == item.GetId() {
