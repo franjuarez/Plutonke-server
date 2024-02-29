@@ -6,27 +6,54 @@ import (
 	"time"
 )
 
-func ValidateExpense(expense types.Expense, storage storage.Storage) bool {
-	// errors := make(map[string]string)
-	return validateExpenseName(expense.Name) && validateExpensePrice(expense.Price) &&
-		validateExpenseDate(expense.Date) && validateExpenseCategory(expense.CategoryID, storage)
+func ValidateExpense(expense types.Expense, storage storage.Storage) []ValidationError{
+	errors := []ValidationError{}
+	validateExpenseName(expense.Name, &errors)
+	validateExpensePrice(expense.Price, &errors)
+	validateExpenseDate(expense.Date, &errors)
+	validateExpenseCategory(expense.CategoryID, storage, &errors)
+	return errors
 }
 
-func validateExpenseName(name string) bool {
-	return len(name) > 0
+func validateExpenseName(name string, errors *[]ValidationError) {
+	if len(name) == 0{
+		err := ErrInvalidExpenseName
+		*errors = append(*errors, ValidationError{
+			Field: err,
+			Message: Errors[err],
+		})
+	}
 }
 
-func validateExpensePrice(price float32) bool {
-	return price > 0
+func validateExpensePrice(price float32, errors *[]ValidationError) {
+	if price <= 0{
+		err := ErrInvalidExpensePrice
+		*errors = append(*errors, ValidationError{
+			Field: err,
+			Message: Errors[err],
+		})
+	}
 }
 
-func validateExpenseDate(date int64) bool {
+func validateExpenseDate(date int64, errors *[]ValidationError) {
 	t := time.Unix(date,  0)
-	return !t.IsZero()
+	if t.IsZero() {
+		err := ErrInvalidExpenseDate
+		*errors = append(*errors, ValidationError{
+			Field: err,
+			Message: Errors[err],
+		})
+	}
 }
 
-func validateExpenseCategory(categoryID uint, storage storage.Storage) bool {
+func validateExpenseCategory(categoryID uint, storage storage.Storage, errors *[]ValidationError) {
 	category, _ := storage.GetCategoryById(categoryID)
 	result, _ := storage.CheckIfCategoryExists(category)
-	return result
+	if result {
+		err := ErrInvalidExpenseCategory
+		*errors = append(*errors, ValidationError{
+			Field: err,
+			Message: Errors[err],
+		})
+	}
 }

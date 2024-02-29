@@ -6,7 +6,6 @@ import (
 	"example/plutonke-server/validation"
 	"net/http"
 	"strconv"
-
 	"github.com/labstack/echo"
 )
 
@@ -50,10 +49,8 @@ func (s *Server) HandleAddExpense(c echo.Context) error {
 		})
 	}
 	
-	if result := validation.ValidateExpense(expense, s.store); !result{
-		return utils.SendFailResponse(c, map[string]string{
-			"error": "invalid expense",
-		})
+	if result := validation.ValidateExpense(expense, s.store); len(result) > 0{
+		return utils.SendFailResponse(c, result)
 	}
 
 	expenseAdded, err := s.store.AddExpense(expense)
@@ -84,10 +81,8 @@ func (s *Server) HandleEditExpense(c echo.Context) error{
 	id := uint(_id)
 	expense.Id = id
 
-	if result := validation.ValidateExpense(expense, s.store); !result{
-		return utils.SendFailResponse(c, map[string]string{
-			"error": "invalid expense",
-		})
+	if result := validation.ValidateExpense(expense, s.store); len(result) > 0{
+		return utils.SendFailResponse(c, result)
 	}
 
 	expenseEdited, err := s.store.EditExpense(expense)
@@ -156,10 +151,8 @@ func (s *Server) HandleAddCategory(c echo.Context) error {
 		})
 	}
 
-	if result := validation.ValidateCategory(category, s.store); !result{
-		return utils.SendFailResponse(c, map[string]string{
-			"error": "Invalid Category",
-		})
+	if result := validation.ValidateCategory(category, s.store); len(result) > 0{
+		return utils.SendFailResponse(c, result)
 	}
 
 	categoryAdded, err := s.store.AddCategory(category)
@@ -190,10 +183,8 @@ func (s *Server) HandleEditCategory(c echo.Context) error{
 	id := uint(_id)
 	category.Id = id
 
-	if result := validation.ValidateCategory(category, s.store); !result{
-		return utils.SendFailResponse(c, map[string]string{
-			"error": "Invalid Category",
-		})
+	if result := validation.ValidateCategory(category, s.store); len(result) > 0{
+		return utils.SendFailResponse(c, result)
 	}
 
 	categoryEdited, err := s.store.EditCategory(category)

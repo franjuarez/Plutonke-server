@@ -5,21 +5,45 @@ import (
 	"example/plutonke-server/types"
 )
 
-func ValidateCategory(category types.Category, storage storage.Storage) bool {
-	return validateCategoryName(category.Name, storage) &&
-		validateCategoryMaxAmount(category.MaxAmount) &&
-		validateCategorySpentAmount(category.SpentAmount)
+func ValidateCategory(category types.Category, storage storage.Storage) []ValidationError  {
+	errors := []ValidationError{}
+	validateCategoryName(category.Name, storage, &errors)
+	validateCategoryMaxAmount(category.MaxAmount, &errors)
+	// validateCategorySpentAmount(category.SpentAmount &errors)
+	return errors
 }
 
-func validateCategoryName(name string, storage storage.Storage) bool {
+func validateCategoryName(name string, storage storage.Storage, errors *[]ValidationError) {
+	if len(name) == 0 {
+		err := ErrInvalidCategoryName
+		*errors = append(*errors, ValidationError{
+			Field: err,
+			Message: Errors[err],
+		})
+	}
+
 	result, _ := storage.CheckIfCategoryNameExists(name)
-	return !result && len(name) > 0
+	
+	if result {
+		err := ErrCategoryNameExists
+		*errors = append(*errors, ValidationError{
+			Field: err,
+			Message: Errors[err],
+		})
+	}
 }
 
-func validateCategoryMaxAmount(maxAmount float32) bool {
-	return maxAmount > 0
+func validateCategoryMaxAmount(maxAmount float32, errors *[]ValidationError) {
+	if maxAmount <= 0 {
+		err := ErrInvalidCategoryMaxAmount
+		*errors = append(*errors, ValidationError{
+			Field: err,
+			Message: Errors[err],
+		})
+	
+	}
 }
 
-func validateCategorySpentAmount(spentAmount float32) bool {
-	return true
-}
+// func validateCategorySpentAmount(spentAmount float32, errors *[]ValidationError) {
+// 	return
+// }
