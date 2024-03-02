@@ -15,30 +15,27 @@ func ValidateCategory(category types.Category, storage storage.Storage) []Valida
 
 func validateCategoryName(name string, storage storage.Storage, errors *[]ValidationError) {
 	if len(name) == 0 {
-		err := ErrInvalidCategoryName
 		*errors = append(*errors, ValidationError{
-			Field: err,
-			Message: Errors[err],
+			Field: ErrNameField,
+			Message: ErrInvalidCategoryName,
 		})
 	}
 
 	result, _ := storage.CheckIfCategoryNameExists(name)
 	
 	if result {
-		err := ErrCategoryNameExists
 		*errors = append(*errors, ValidationError{
-			Field: err,
-			Message: Errors[err],
+			Field: ErrNameField,
+			Message: ErrCategoryNameExists,
 		})
 	}
 }
 
 func validateCategoryMaxAmount(maxAmount float32, errors *[]ValidationError) {
 	if maxAmount <= 0 {
-		err := ErrInvalidCategoryMaxAmount
 		*errors = append(*errors, ValidationError{
-			Field: err,
-			Message: Errors[err],
+			Field: ErrMaxAmountField,
+			Message: ErrInvalidCategoryMaxAmount,
 		})
 	
 	}

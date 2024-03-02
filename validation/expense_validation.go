@@ -17,20 +17,18 @@ func ValidateExpense(expense types.Expense, storage storage.Storage) []Validatio
 
 func validateExpenseName(name string, errors *[]ValidationError) {
 	if len(name) == 0{
-		err := ErrInvalidExpenseName
 		*errors = append(*errors, ValidationError{
-			Field: err,
-			Message: Errors[err],
+			Field: ErrNameField,
+			Message: ErrInvalidExpenseName,
 		})
 	}
 }
 
 func validateExpensePrice(price float32, errors *[]ValidationError) {
 	if price <= 0{
-		err := ErrInvalidExpensePrice
 		*errors = append(*errors, ValidationError{
-			Field: err,
-			Message: Errors[err],
+			Field: ErrPriceField,
+			Message: ErrInvalidExpensePrice,
 		})
 	}
 }
@@ -38,10 +36,9 @@ func validateExpensePrice(price float32, errors *[]ValidationError) {
 func validateExpenseDate(date int64, errors *[]ValidationError) {
 	t := time.Unix(date,  0)
 	if t.IsZero() {
-		err := ErrInvalidExpenseDate
 		*errors = append(*errors, ValidationError{
-			Field: err,
-			Message: Errors[err],
+			Field: ErrDateField,
+			Message: ErrInvalidExpenseDate,
 		})
 	}
 }
@@ -49,11 +46,10 @@ func validateExpenseDate(date int64, errors *[]ValidationError) {
 func validateExpenseCategory(categoryID uint, storage storage.Storage, errors *[]ValidationError) {
 	category, _ := storage.GetCategoryById(categoryID)
 	result, _ := storage.CheckIfCategoryExists(category)
-	if result {
-		err := ErrInvalidExpenseCategory
+	if !result {
 		*errors = append(*errors, ValidationError{
-			Field: err,
-			Message: Errors[err],
+			Field: ErrCategoryField,
+			Message: ErrInvalidExpenseCategory,
 		})
 	}
 }

@@ -1,29 +1,24 @@
 package utils
 
-import(
-	"github.com/labstack/echo"
+import (
+	"example/plutonke-server/validation"
 	"net/http"
+
+	"github.com/labstack/echo"
 )
 
-type Response[T any] struct {
-	Success bool `json:"success"`
-	Body    T    `json:"body"`
+func SendSuccessResponse[T any](c echo.Context, response T) error {
+	return c.JSON(http.StatusOK, response)
 }
 
-func SendSuccessResponse[T any](c echo.Context, response T) error{
-	return c.JSON(http.StatusOK, Response[T]{
-		Success: true,
-		Body: response,
-	})
+func SendFailValidationResponse(c echo.Context, response []validation.ValidationError) error {
+	return c.JSON(http.StatusBadRequest, response)
 }
 
-func SendFailResponse[T any](c echo.Context, response T) error{
-	return c.JSON(http.StatusOK, Response[T]{
-		Success: false,
-		Body: response,
-	})
+func SendFailServerResponse(c echo.Context, response map[string]string) error {
+	return c.JSON(http.StatusInternalServerError, response)
 }
 
-func SendEmptyResponse(c echo.Context) error{
+func SendEmptyResponse(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
