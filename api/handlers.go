@@ -227,6 +227,23 @@ func (s *Server) HandleDeleteCategory(c echo.Context) error {
 		return utils.SendFailValidationResponse(c, []validation.ValidationError{err})
 	}
 
+
+	has_expenses, err := s.store.CheckIfCategoryHasExpenses(id)
+	
+	if err != nil {
+		return utils.SendFailServerResponse(c, map[string]string{
+			"error": err.Error(),
+		})
+	}
+
+	if has_expenses {
+		err := validation.ValidationError{
+			Field: validation.ErrCategoryHasExpenses,
+			Message: validation.ErrCategoryHasExpensesDescriptive,
+		}
+		return utils.SendFailValidationResponse(c, []validation.ValidationError{err})
+	}
+
 	if err := s.store.DeleteCategory(id); err != nil {
 		return utils.SendFailServerResponse(c, map[string]string{
 			"error": err.Error(),

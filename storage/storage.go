@@ -16,6 +16,7 @@ type Storage interface {
 	DeleteCategory(uint) error
 	UpdateCategorySpentAmount(types.Category, float32) error
 	
+	CheckIfCategoryHasExpenses(uint) (bool, error)
 	CheckIfCategoryExists(types.Category) (bool, error)
 	CheckIfCategoryNameExists(string) (bool, error)
 	Close() error

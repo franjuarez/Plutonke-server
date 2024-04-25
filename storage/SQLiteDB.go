@@ -161,11 +161,24 @@ func (sqldb *SQLiteDatabase) UpdateCategorySpentAmount(category types.Category, 
 	return nil
 }
 
+func (sqldb *SQLiteDatabase) CheckIfCategoryHasExpenses(categoryId uint) (bool, error) {
+	var category types.Category
+	if result := sqldb.db.First(&category, categoryId); result.Error != nil {
+		        if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+            		return false, result.Error
+        		}
+			}
+	if category.SpentAmount > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
 func (sqldb *SQLiteDatabase) CheckIfCategoryExists(category types.Category) (bool, error) {
 	if result := sqldb.db.First(&category, category.Id); result.Error != nil {
 		        if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-            return false, nil
-        }
+            		return false, nil
+        		}
 		return false, result.Error
 	}
 	return true, nil

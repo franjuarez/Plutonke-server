@@ -8,7 +8,8 @@ var(
 	ErrCategoryField = "category"
 	ErrMaxAmountField = "maxAmount"
 	ErrSpentAmountField = "spentAmount"
-
+	ErrCategoryHasExpenses = "category has expenses"
+	
 	ErrInvalidId = "invalid id"
 	ErrInvalidExpenseName = "Expenses need to have a name"
 	ErrInvalidExpensePrice = "The price of the expense must be greater than 0"
@@ -21,4 +22,5 @@ var(
 	ErrCategoryExists = "category already exists"
 	ErrInvalidExpense = "invalid expense"
 	ErrInvalidCategory = "invalid category"
+	ErrCategoryHasExpensesDescriptive = "can not delete category, it has expenses"
 )
